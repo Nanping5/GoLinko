@@ -1,0 +1,16 @@
+[common]
+server_addr = YOUR_FRPS_HOST
+server_port = 7000
+token = YOUR_FRP_TOKEN
+
+[GoLinko-backend]
+type = http
+local_ip = 127.0.0.1
+local_port = 8080
+custom_domains = api-GoLinko.example.com
+
+[GoLinko-frontend]
+type = http
+local_ip = 127.0.0.1
+local_port = 5173
+custom_domains = web-GoLinko.example.com

@@ -1,0 +1,64 @@
+# 配置/环境（补充）
+configs/configs.toml
+configs/configs.toml.*
+!configs/configs.toml.example
+.envrc
+.history
+
+# Serena
+.serena/
+
+# 其他常见
+*.log.*
+# 静态资源
+static/
+.idea/
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
+*.swp
+*.swo
+*.bak
+*.old
+*.orig
+
+# Go
+/bin/
+/build/
+*.exe
+*.test
+*.out
+coverage.out
+main
+GoLinko
+cmd/tmp/main
+tmp/main
+vendor/
+
+# Node.js/前端
+node_modules/
+frontend/node_modules/
+dist/
+frontend/dist/
+
+# 配置/环境
+.env
+.env.*
+configs/configs_local.toml
+configs/*.local.*
+
+# 编辑器/IDE
+.vscode/
+*.code-workspace
+*.iml
+*.sublime*
+
+# 临时/测试
+logs/
+tmp/
+*.local
+.spec-workflow/
+
+# Postman
+*.postman_collection.json

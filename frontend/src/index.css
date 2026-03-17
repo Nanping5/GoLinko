@@ -1,0 +1,67 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #07c160;
+  --color-secondary: #2f363d;
+  --color-background: #f0f2f5;
+  --color-foreground: #0b0c0d;
+}
+
+:root {
+  /* iOS / Android safe area */
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  /* 底部导航高度 */
+  --nav-h: 56px;
+  /* 底部导航 + 安全区总高度 */
+  --nav-total: calc(var(--nav-h) + var(--safe-bottom));
+}
+
+* {
+  box-sizing: border-box;
+  /* 消除 iOS 点击高亮 */
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  /* dvh = dynamic viewport height，地址栏收起/展开时自动适应 */
+  height: 100dvh;
+  overflow: hidden;
+  overscroll-behavior: none;
+  /* 禁止iOS字体自动缩放 */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  height: 100dvh;
+  overflow: hidden;
+  overscroll-behavior: none;
+  background: #f0f2f5;
+  font-family: "SF Pro Rounded", "Helvetica Neue", "Segoe UI", "PingFang SC", "Noto Sans SC", sans-serif;
+  color: var(--color-foreground);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  height: 100dvh;
+  overflow: hidden;
+}
+
+/* 可滚动列表：禁止父级的弹性回弹，只在自身 overflow:auto 区域滚动 */
+.scroll-area {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
+/* iPhone 底部安全区辅助类 */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+.pt-safe {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+

@@ -1,0 +1,45 @@
+# GoLinko 配置示例
+
+[main_config]
+app_name = "GoLinko"
+host = "0.0.0.0"
+port = 8080
+
+[mysql_config]
+host = "127.0.0.1"
+port = 3306
+user = "root"
+password = "your_mysql_password"
+db_name = "GoLinko"
+
+[redis_config]
+host = "127.0.0.1"
+port = 6379
+password = ""
+db = 0
+
+[smtp]
+email_addr = "your_email@example.com"
+smtp_key = "your_smtp_key"
+smtp_server = "smtp.example.com"
+
+[auth_code_config]
+access_key_id = ""
+access_key_secret = ""
+sign_name = ""
+template_code = ""
+
+[log_config]
+log_path = "./logs"
+
+[kafka_config]
+hostport = "localhost:9092"
+message_mode = "kafka"
+login_topic = "login-events"
+chat_topic = "chat-messages"
+partition = 3
+timeout = 10
+
+[static_src_config]
+static_avatar_path = "./static/avatars"
+static_file_path = "./static/files"

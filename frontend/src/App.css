@@ -1,0 +1,9 @@
+#root {
+  width: 100%;
+}
+
+.app-shell {
+  min-height: 100vh;
+  display: flex;
+  background: transparent;
+}
