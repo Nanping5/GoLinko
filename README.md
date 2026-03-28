@@ -79,7 +79,7 @@ GoLinko 是一款基于 Go 的高性能即时通讯（IM）后端系统，支持
 ### 1. 克隆项目
 
 ```bash
-git clone https://your.repo.url/GoLinko.git
+git clone https://github.com/Nanping5/GoLinko.git
 cd GoLinko
 ```
 
@@ -89,7 +89,7 @@ cd GoLinko
 # 单库模式
 docker-compose up -d mysql redis kafka minio
 
-# 主从模式（读写分离）
+# 主从模式
 docker-compose up -d mysql-cludae mysql-slave redis kafka minio
 ```
 
@@ -127,22 +127,6 @@ INSTANCE_ID=instance-2 go run cmd/main.go
 ./scripts/start_cluster.sh
 ```
 
-### 验证分布式功能
-
-```bash
-# 查看在线用户
-docker exec golinko-redis redis-cli KEYS "user:online:*"
-
-# 查看用户所在实例
-docker exec golinko-redis redis-cli GET "user:online:{用户ID}"
-```
-
-### 验证 MySQL 主从同步
-
-```bash
-docker exec golinko-mysql-slave mysql -uroot -proot123 -e "SHOW SLAVE STATUS\G"
-```
-
 ## 目录结构
 
 ```
@@ -167,8 +151,7 @@ GoLinko/
 │       ├── kafka/              # Kafka 服务
 │       ├── redis/
 │       │   ├── redis_service.go# Redis 基础服务
-│       │   ├── online.go       # 用户在线状态管理
-│       │   └── pubsub.go       # Pub/Sub 封装
+│       │   |── online.go       # 用户在线状态管理
 │       ├── storage/
 │       │   └── minio.go        # MinIO 对象存储
 │       └── sms/                # 邮件验证码服务
@@ -179,15 +162,6 @@ GoLinko/
 │   ├── enum/                   # 枚举
 │   ├── utils/                  # 工具函数
 │   └── zlog/                   # 日志
-├── scripts/
-│   ├── start_cluster.sh        # 集群启动脚本
-│   ├── test_ws.sh              # WebSocket 测试脚本
-│   ├── benchmark/              # 压测工具
-│   └── mysql/
-│       ├── cludae.cnf          # MySQL 主库配置
-│       ├── slave.cnf           # MySQL 从库配置
-│       └── init_replication.sh # 主从同步初始化
-├── static/                     # 静态资源
 ├── docker-compose.yml          # Docker 编排
 └── Dockerfile                  # Docker 构建文件
 ```
