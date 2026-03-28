@@ -1,0 +1,894 @@
+{
+    "info": {
+        "name": "GoLinko API",
+        "description": "GoLinko 聊天应用 API 接口集合（与当前后端路由同步）",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+        "_postman_id": "GoLinko-api-collection",
+        "version": "1.4.0"
+    },
+    "item": [
+        {
+            "name": "系统",
+            "item": [
+                {
+                    "name": "健康检查",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/v1/ping",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "v1",
+                                "ping"
+                            ]
+                        }
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "用户认证",
+            "item": [
+                {
+                    "name": "发送邮箱验证码",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"{{testEmail}}\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/v1/send_email_code",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "v1",
+                                "send_email_code"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "注册",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"nickname\": \"测试用户\",\n  \"telephone\": \"13800138000\",\n  \"email\": \"{{testEmail}}\",\n  \"password\": \"{{testPassword}}\",\n  \"code\": \"{{testCode}}\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/v1/register",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "v1",
+                                "register"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "用户登录（密码）",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "var jsonData = pm.response.json();",
+                                    "if (jsonData.code === 200 && jsonData.data) {",
+                                    "    pm.collectionVariables.set(\"token\", jsonData.data.token || '');",
+                                    "    pm.collectionVariables.set(\"userId\", jsonData.data.user_id || '');",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"{{testEmail}}\",\n  \"password\": \"{{testPassword}}\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/v1/login",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "v1",
+                                "login"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "用户登录（验证码）",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "var jsonData = pm.response.json();",
+                                    "if (jsonData.code === 200 && jsonData.data) {",
+                                    "    pm.collectionVariables.set(\"token\", jsonData.data.token || '');",
+                                    "    pm.collectionVariables.set(\"userId\", jsonData.data.user_id || '');",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"{{testEmail}}\",\n  \"code\": \"{{testCode}}\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/v1/login_by_code",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "v1",
+                                "login_by_code"
+                            ]
+                        }
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "用户资料",
+            "item": [
+                {
+                    "name": "获取当前用户信息",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/v1/get_user_info",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "v1",
+                                "get_user_info"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "更新用户信息",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"nickname\": \"新昵称\",\n  \"avatar\": \"https://example.com/avatar.jpg\",\n  \"birthday\": \"2000-01-01\",\n  \"gender\": 1,\n  \"signature\": \"hello GoLinko\",\n  \"telephone\": \"13800138001\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/v1/user_info",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "v1",
+                                "user_info"
+                            ]
+                        }
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "群组管理",
+            "item": [
+                {
+                    "name": "创建群组",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"group_name\": \"测试群组\",\n  \"notice\": \"欢迎加入\",\n  \"avatar\": \"https://example.com/group.jpg\",\n  \"add_mode\": 0\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/v1/create_group",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "v1",
+                                "create_group"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "加载我的群组",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/v1/load_my_groups",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "v1",
+                                "load_my_groups"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "检查入群模式",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/v1/check_group_add_mode?group_id={{groupId}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "v1",
+                                "check_group_add_mode"
+                            ],
+                            "query": [
+                                {
+                                    "key": "group_id",
+                                    "value": "{{groupId}}"
+                                }
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "直接入群",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/v1/enter_group_directly?group_id={{groupId}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "v1",
+                                "enter_group_directly"
+                            ],
+                            "query": [
+                                {
+                                    "key": "group_id",
+                                    "value": "{{groupId}}"
+                                }
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "退出群组",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"group_id\": \"{{groupId}}\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/v1/leave_group",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "v1",
+                                "leave_group"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "解散群组",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"group_id\": \"{{groupId}}\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/v1/dismiss_group",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "v1",
+                                "dismiss_group"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "获取群详情",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/v1/get_group_info?group_id={{groupId}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "v1",
+                                "get_group_info"
+                            ],
+                            "query": [
+                                {
+                                    "key": "group_id",
+                                    "value": "{{groupId}}"
+                                }
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "更新群资料",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"group_id\": \"{{groupId}}\",\n  \"group_name\": \"新群名\",\n  \"avatar\": \"https://example.com/new-group.jpg\",\n  \"notice\": \"新的群公告\",\n  \"add_mode\": 1\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/v1/update_group_info",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "v1",
+                                "update_group_info"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "获取群成员",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/v1/get_group_members?group_id={{groupId}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "v1",
+                                "get_group_members"
+                            ],
+                            "query": [
+                                {
+                                    "key": "group_id",
+                                    "value": "{{groupId}}"
+                                }
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "移除群成员",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"group_id\": \"{{groupId}}\",\n  \"user_id\": \"{{memberUserId}}\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/v1/remove_group_member",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "v1",
+                                "remove_group_member"
+                            ]
+                        }
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "联系人与申请",
+            "item": [
+                {
+                    "name": "获取好友列表",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/v1/contact_user_list",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "v1",
+                                "contact_user_list"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "获取联系人详情",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/v1/contact_info?contact_id={{targetContactId}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "v1",
+                                "contact_info"
+                            ],
+                            "query": [
+                                {
+                                    "key": "contact_id",
+                                    "value": "{{targetContactId}}"
+                                }
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "获取已加入的群组",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/v1/load_my_joined_groups",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "v1",
+                                "load_my_joined_groups"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "删除联系人",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/v1/delete_contact?contact_id={{targetContactId}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "v1",
+                                "delete_contact"
+                            ],
+                            "query": [
+                                {
+                                    "key": "contact_id",
+                                    "value": "{{targetContactId}}"
+                                }
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "申请添加好友/群聊",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"contact_id\": \"{{targetContactId}}\",\n  \"message\": \"我是{{userId}}，想加你好友/进群\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/v1/apply_add_contact",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "v1",
+                                "apply_add_contact"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "获取申请列表",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/v1/contact_apply_list",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "v1",
+                                "contact_apply_list"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "同意申请",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/v1/accept_contact_apply?apply_id={{applyId}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "v1",
+                                "accept_contact_apply"
+                            ],
+                            "query": [
+                                {
+                                    "key": "apply_id",
+                                    "value": "{{applyId}}"
+                                }
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "拒绝申请",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/v1/reject_contact_apply?apply_id={{applyId}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "v1",
+                                "reject_contact_apply"
+                            ],
+                            "query": [
+                                {
+                                    "key": "apply_id",
+                                    "value": "{{applyId}}"
+                                }
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "拉黑联系人",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/v1/black_contact?contact_id={{targetContactId}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "v1",
+                                "black_contact"
+                            ],
+                            "query": [
+                                {
+                                    "key": "contact_id",
+                                    "value": "{{targetContactId}}"
+                                }
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "解除拉黑",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/v1/unblack_contact?contact_id={{targetContactId}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "v1",
+                                "unblack_contact"
+                            ],
+                            "query": [
+                                {
+                                    "key": "contact_id",
+                                    "value": "{{targetContactId}}"
+                                }
+                            ]
+                        }
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "WebSocket",
+            "item": [
+                {
+                    "name": "建立 WS 连接",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/v1/ws",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "v1",
+                                "ws"
+                            ]
+                        }
+                    },
+                    "response": []
+                }
+            ]
+        }
+    ],
+    "variable": [
+        {
+            "key": "baseUrl",
+            "value": "http://localhost:8080",
+            "type": "string"
+        },
+        {
+            "key": "testEmail",
+            "value": "5738645529@163.com",
+            "type": "string"
+        },
+        {
+            "key": "testPassword",
+            "value": "liuxu123123",
+            "type": "string"
+        },
+        {
+            "key": "testCode",
+            "value": "123456",
+            "type": "string"
+        },
+        {
+            "key": "token",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "userId",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "targetContactId",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "applyId",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "groupId",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "memberUserId",
+            "value": "",
+            "type": "string"
+        }
+    ]
+}
