@@ -225,54 +225,71 @@ func (u *userInfoService) GetUserById(ctx context.Context, uuid string) (string,
 }
 
 // UpdateUserInfo 更新用户信息（不要求更新全部）
+// 演示请求级强制读主库：写后读保证一致性
 func (u *userInfoService) UpdateUserInfo(ctx context.Context, req request.UserUpdateInfoRequest) (string, int, *response.UserUpdateUserInfoResponse) {
-	db := dao.NewDbClient(ctx)
+	// 使用带一致性的写操作：写后自动标记
+	var user model.UserInfo
+	var err error
 
-	// 从数据库查询用户模型对象
-	user := model.UserInfo{}
-	if err := db.Where("uuid=?", req.Uuid).First(&user).Error; err != nil {
+	// 步骤1: 写操作 + 自动标记
+	ctx, err = dao.WriteAndMark(ctx, func(db *gorm.DB) error {
+		// 先查询用户（此时还没标记，可能走从库）
+		if err := db.Where("uuid=?", req.Uuid).First(&user).Error; err != nil {
+			return err
+		}
+
+		// 更新字段
+		if req.Nickname != nil {
+			user.Nickname = *req.Nickname
+		}
+		if req.Avatar != nil {
+			user.Avatar = *req.Avatar
+		}
+		if req.Birthday != nil {
+			user.Birthday = *req.Birthday
+		}
+		if req.Gender != nil {
+			user.Gender = *req.Gender
+		}
+		if req.Signature != nil {
+			user.Signature = *req.Signature
+		}
+		if req.Telephone != nil {
+			user.Telephone = *req.Telephone
+		}
+
+		// 保存更新
+		return db.Save(&user).Error
+	})
+
+	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			zlog.GetLogger().Error("用户不存在", zap.String("uuid", req.Uuid))
 			return "用户不存在", -2, nil
 		}
-		zlog.GetLogger().Error("查询用户信息失败", zap.Error(err), zap.String("uuid", req.Uuid))
-		return constants.SYSTEM_ERROR, -1, nil
-	}
-
-	// 更新用户信息（只更新提供的字段）
-	if req.Nickname != nil {
-		user.Nickname = *req.Nickname
-	}
-	if req.Avatar != nil {
-		user.Avatar = *req.Avatar
-	}
-	if req.Birthday != nil {
-		user.Birthday = *req.Birthday
-	}
-	if req.Gender != nil {
-		user.Gender = *req.Gender
-	}
-	if req.Signature != nil {
-		user.Signature = *req.Signature
-	}
-	if req.Telephone != nil {
-		user.Telephone = *req.Telephone
-	}
-
-	// 保存更新
-	if err := db.Save(&user).Error; err != nil {
 		zlog.GetLogger().Error("更新用户信息失败", zap.Error(err), zap.String("uuid", req.Uuid))
 		return constants.SYSTEM_ERROR, -1, nil
 	}
+
+	// 步骤2: 后续读操作自动走主库（因为 ctx 已被标记）
+	// 这里演示：更新后立即查询，保证读到最新数据
+	db := dao.NewReadClientWithConsistency(ctx)
+	var updatedUser model.UserInfo
+	if err := db.Where("uuid=?", req.Uuid).First(&updatedUser).Error; err != nil {
+		zlog.GetLogger().Error("查询更新后用户信息失败", zap.Error(err))
+		// 回退使用内存中的数据
+		updatedUser = user
+	}
+
 	// 返回更新后的实际值
 	resp := &response.UserUpdateUserInfoResponse{
-		Uuid:      user.Uuid,
-		Nickname:  &user.Nickname,
-		Avatar:    &user.Avatar,
-		Birthday:  &user.Birthday,
-		Gender:    &user.Gender,
-		Signature: &user.Signature,
-		Telephone: &user.Telephone,
+		Uuid:      updatedUser.Uuid,
+		Nickname:  &updatedUser.Nickname,
+		Avatar:    &updatedUser.Avatar,
+		Birthday:  &updatedUser.Birthday,
+		Gender:    &updatedUser.Gender,
+		Signature: &updatedUser.Signature,
+		Telephone: &updatedUser.Telephone,
 	}
 	return "更新用户信息成功", 0, resp
 }

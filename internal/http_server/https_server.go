@@ -42,6 +42,8 @@ func InitRouter() {
 		v1Group.POST("/send_email_code", v1.SendEmailCode)
 		v1Group.POST("/login_by_code", v1.LoginByCode)
 		v1Group.Use(middleware.JWT())
+		// 请求级读写一致性中间件：确保同一请求内写后读走主库
+		v1Group.Use(middleware.RequestConsistency())
 
 		v1Group.POST("/upload_file", v1.UploadFile)
 		v1Group.PUT("/user_info", v1.UpdateUserInfo)

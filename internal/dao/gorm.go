@@ -16,6 +16,14 @@ import (
 	gormlogger "gorm.io/gorm/logger"
 )
 
+// contextKey 上下文键类型
+type contextKey string
+
+const (
+	// hasWrittenKey 标记本次请求是否发生过写操作
+	hasWrittenKey contextKey = "has_written"
+)
+
 var (
 	dbWrite *gorm.DB   // 主库（写）
 	dbRead  *gorm.DB   // 从库（读）
@@ -247,4 +255,46 @@ func GetRandomReadDB() *gorm.DB {
 	r := rand.Intn(len(cfg.ReadHosts))
 	_ = r // 简化实现，返回默认从库
 	return dbRead
+}
+
+// ========== 请求级强制读主库（业界常用方案）==========
+
+// MarkWritten 标记本次请求已发生写操作
+// 在写操作完成后调用，后续读操作将自动路由到主库
+func MarkWritten(ctx context.Context) context.Context {
+	return context.WithValue(ctx, hasWrittenKey, true)
+}
+
+// HasWritten 检查本次请求是否发生过写操作
+func HasWritten(ctx context.Context) bool {
+	if v, ok := ctx.Value(hasWrittenKey).(bool); ok {
+		return v
+	}
+	return false
+}
+
+// GetDBForRead 获取读数据库连接（请求级一致性）
+// 核心逻辑：如果本次请求发生过写操作，强制从主库读取
+func GetDBForRead(ctx context.Context) *gorm.DB {
+	if HasWritten(ctx) {
+		return GetWriteDB().WithContext(ctx)
+	}
+	return GetReadDB().WithContext(ctx)
+}
+
+// WriteAndMark 执行写操作并自动标记
+// 封装写操作，自动处理一致性标记
+func WriteAndMark(ctx context.Context, fn func(db *gorm.DB) error) (context.Context, error) {
+	err := fn(GetWriteDB().WithContext(ctx))
+	if err != nil {
+		return ctx, err
+	}
+	// 写操作成功，标记本次请求已写入
+	return MarkWritten(ctx), nil
+}
+
+// NewReadClientWithConsistency 创建带一致性的读客户端
+// 根据请求上下文自动选择主库或从库
+func NewReadClientWithConsistency(ctx context.Context) *gorm.DB {
+	return GetDBForRead(ctx)
 }
