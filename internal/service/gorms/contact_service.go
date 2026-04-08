@@ -34,7 +34,8 @@ var ContactInfoService = &contactInfoService{}
 // GetContactUserList 获取联系人列表
 func (c *contactInfoService) GetContactUserList(ctx context.Context, userId string) (string, []response.UserListResponse, int) {
 	var contactList []model.UserContact
-	db := dao.NewDbClient(ctx)
+	// 读操作：查询联系人列表
+	db := dao.GetDBForRead(ctx)
 
 	if err := db.Where("user_id = ? AND status NOT IN (?) AND contact_type = ?",
 		userId, []int8{4, 3}, contact_type_enum.USER).Find(&contactList).Error; err != nil {
@@ -78,9 +79,9 @@ func (c *contactInfoService) GetContactUserList(ctx context.Context, userId stri
 
 // LoadMyJoinedGroups 获取用户加入的群组列表
 func (c *contactInfoService) LoadMyJoinedGroups(ctx context.Context, userId string) (string, []response.LoadMyJoinedGroupsResponse, int) {
-	// 查询用户加入的群组列表
+	// 读操作：查询用户加入的群组列表
 	var contactList []model.UserContact
-	db := dao.NewDbClient(ctx)
+	db := dao.GetDBForRead(ctx)
 	// 过滤退群或被踢，且只查群聊类型
 	if err := db.Order("created_at desc").Where("user_id = ? AND contact_type = ? AND status NOT IN (6, 7)",
 		userId, contact_type_enum.GROUP).Find(&contactList).Error; err != nil {
@@ -112,7 +113,7 @@ func (c *contactInfoService) LoadMyJoinedGroups(ctx context.Context, userId stri
 
 	resp := make([]response.LoadMyJoinedGroupsResponse, 0, len(groupInfos))
 	for _, groupInfo := range groupInfos {
-		// 过滤掉自己是创建者的群组 (业务逻辑：如果是“加入”的群组，通常不包含自己创建的)
+		// 过滤掉自己是创建者的群组 (业务逻辑：如果是”加入”的群组，通常不包含自己创建的)
 		if groupInfo.OwnerId != userId {
 			resp = append(resp, response.LoadMyJoinedGroupsResponse{
 				GroupId:   groupInfo.Uuid,
